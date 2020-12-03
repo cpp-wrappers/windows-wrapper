@@ -1,0 +1,5 @@
+{
+    "command": "g++ -c --output=build\\object\\file.o src/file.cpp",
+    "compiler": "41746910cbc8aa1f0bf6d0426e473109b42a6515085960b43821dd4d2d461acb",
+    "deps": null
+}
