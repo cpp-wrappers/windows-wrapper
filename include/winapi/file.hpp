@@ -68,24 +68,14 @@ public:
     unsigned long read(void* buf, int bytes) {
         unsigned long read;
         bool success = internal::read_file(h.raw(), buf, bytes, &read);
-        if(!success) {
-            throw std::system_error {
-                std::error_code{internal::get_last_error(), std::system_category()},
-                "cannot read file"
-            };
-        }
+        if(!success) throw error { "cannot read file"};
         return read;
     }
 
     unsigned long write(void* buf, int bytes) {
         unsigned long write;
         bool success = internal::write_file(h.raw(), buf, bytes, &write);
-        if(!success) {
-            throw std::system_error {
-                std::error_code{internal::get_last_error(), std::system_category()},
-                "cannot write file"
-            };
-        }
+        if(!success) throw error {"cannot write file"};
         return write;
     }
 };
@@ -106,12 +96,17 @@ inline file create_file(
     );
 
     if(h == (void*)(long long)-1)
-        throw std::system_error {
-            std::error_code{internal::get_last_error(), std::system_category()},
-            "cannot open file '" + name + "'"
-        };
+        throw error {"cannot open file '" + name + "'"};
 
     return {h};
+}
+
+inline file open_existing_file_for_reading(std::string name) {
+    return create_file(name, {access::read}, {share::read}, disposition::open_existing, {file_attrib::normal});
+}
+
+inline file create_file_for_writing(std::string name) {
+    return create_file(name, {access::write}, {}, disposition::always_create, {file_attrib::normal});
 }
 
 }
