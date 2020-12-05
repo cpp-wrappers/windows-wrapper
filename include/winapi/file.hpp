@@ -12,10 +12,11 @@
 namespace windows {
 
 namespace internal {
-    void* create_file(std::string str, int access, int share_mode, int creation_disposition, int flags_and_attrs);
+    void* create_file(const wchar_t* str, int access, int share_mode, int creation_disposition, int flags_and_attrs);
     bool read_file(void* h, void* buf, int bytes_to_read, unsigned long* bytes_read);
     bool write_file(void* h, void* buf, int bytes_to_write, unsigned long* bytes_written);
     void* get_std_handle(int h);
+    int get_current_directory(int len, wchar_t* buf);
 }
 
 enum class access : unsigned { read = 0x80000000, write = 0x40000000 };
@@ -41,16 +42,16 @@ enum class file_attrib : unsigned {
     temporary = 0x100
 };
 
-inline unsigned long read(const handle& h, void* buf, int bytes) {
+inline unsigned long read(const handle& h, auto* buf, int len) {
     unsigned long read;
-    bool success = internal::read_file(h.raw(), buf, bytes, &read);
+    bool success = internal::read_file(h.raw(), buf, sizeof(decltype(*buf))*len, &read);
     if(!success) throw error { "cannot read file"};
     return read;
 }
 
-inline unsigned long write(const handle& h, void* buf, int bytes) {
+inline unsigned long write(const handle& h, auto* buf, int len) {
     unsigned long write;
-    bool success = internal::write_file(h.raw(), buf, bytes, &write);
+    bool success = internal::write_file(h.raw(), buf, sizeof(decltype(*buf))*len, &write);
     if(!success) throw error {"cannot write file"};
     return write;
 }
@@ -79,14 +80,14 @@ public:
 using file = basic_file<managed_handle>;
 
 inline file create_file(
-    std::string name,
+    std::wstring name,
     std::initializer_list<access> access_mode,
     std::initializer_list<share> sm,
     disposition d,
     std::initializer_list<file_attrib> fa
 ) {
     void* h = internal::create_file(
-        name,
+        name.c_str(),
         internal::make_bit_field(access_mode),
         internal::make_bit_field(sm),
         (unsigned) d,
@@ -94,16 +95,16 @@ inline file create_file(
     );
 
     if(h == (void*)(long long)-1)
-        throw error {"cannot open file '" + name + "'"};
+        throw error {"cannot open file"};
 
     return {h};
 }
 
-inline file open_existing_file_for_reading(std::string name) {
+inline file open_existing_file_for_reading(std::wstring name) {
     return create_file(name, {access::read}, {share::read}, disposition::open_existing, {file_attrib::normal});
 }
 
-inline file create_file_for_writing(std::string name) {
+inline file create_file_for_writing(std::wstring name) {
     return create_file(name, {access::write}, {}, disposition::always_create, {file_attrib::normal});
 }
 
@@ -123,5 +124,17 @@ inline handle get_std_handle(std_handle_type std_h) {
 inline handle get_std_input_handle() { return get_std_handle(std_handle_type::input); }
 inline handle get_std_output_handle() { return get_std_handle(std_handle_type::output); }
 inline handle get_std_error_handle() { return get_std_handle(std_handle_type::error); }
+
+inline std::wstring get_current_directory() {
+    int size = internal::get_current_directory(0, nullptr);
+    if(size == 0)
+        throw error{"cannot retrieve current directory path size"};
+    
+    std::wstring res(size, 0);
+    if(internal::get_current_directory(res.size(), res.data()) == 0)
+        throw error{"cannot get current directory"};
+
+    return std::move(res);
+}
 
 }

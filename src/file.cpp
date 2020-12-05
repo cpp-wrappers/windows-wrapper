@@ -7,13 +7,13 @@
 using namespace windows;
 
 void* internal::create_file(
-    std::string str,
+    const wchar_t* str,
     int access,
     int share_mode,
     int creation_disposition,
     int flags_and_attrs
 ) {
-    return CreateFileA(str.c_str(), access, share_mode, nullptr, creation_disposition, flags_and_attrs, nullptr);
+    return CreateFileW(str, access, share_mode, nullptr, creation_disposition, flags_and_attrs, nullptr);
 }
 
 bool internal::read_file(void* h, void* buf, int bytes_to_read, unsigned long* bytes_read) {
@@ -26,4 +26,8 @@ bool internal::write_file(void* h, void* buf, int bytes_to_write, unsigned long*
 
 void* internal::get_std_handle(int h) {
     return GetStdHandle(h);
+}
+
+int internal::get_current_directory(int len, wchar_t *buf) {
+    return GetCurrentDirectoryW(len, buf);
 }
