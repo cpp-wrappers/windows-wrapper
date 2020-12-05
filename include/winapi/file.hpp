@@ -15,6 +15,7 @@ namespace internal {
     void* create_file(std::string str, int access, int share_mode, int creation_disposition, int flags_and_attrs);
     bool read_file(void* h, void* buf, int bytes_to_read, unsigned long* bytes_read);
     bool write_file(void* h, void* buf, int bytes_to_write, unsigned long* bytes_written);
+    void* get_std_handle(int h);
 }
 
 enum class access : unsigned { read = 0x80000000, write = 0x40000000 };
@@ -40,45 +41,42 @@ enum class file_attrib : unsigned {
     temporary = 0x100
 };
 
-class file;
+inline unsigned long read(const handle& h, void* buf, int bytes) {
+    unsigned long read;
+    bool success = internal::read_file(h.raw(), buf, bytes, &read);
+    if(!success) throw error { "cannot read file"};
+    return read;
+}
+
+inline unsigned long write(const handle& h, void* buf, int bytes) {
+    unsigned long write;
+    bool success = internal::write_file(h.raw(), buf, bytes, &write);
+    if(!success) throw error {"cannot write file"};
+    return write;
+}
 
 
-file create_file(
-    std::string name,
-    std::initializer_list<access> access_mode,
-    std::initializer_list<share> sm,
-    disposition d,
-    std::initializer_list<file_attrib> fa
-);
+template<class HandleT>
+class basic_file {
+    HandleT h;
 
-class file {
-    handle h;
-
-    friend file create_file(
-        std::string name,
-        std::initializer_list<access> access_mode,
-        std::initializer_list<share> sm,
-        disposition d,
-        std::initializer_list<file_attrib> fa
-    );
-
-    file(void* raw_handle) : h{raw_handle}{}
 public:
+    basic_file(void* raw_handle) : h{raw_handle}{}
 
     unsigned long read(void* buf, int bytes) {
-        unsigned long read;
-        bool success = internal::read_file(h.raw(), buf, bytes, &read);
-        if(!success) throw error { "cannot read file"};
-        return read;
+        return read(h, buf, bytes);
     }
 
     unsigned long write(void* buf, int bytes) {
-        unsigned long write;
-        bool success = internal::write_file(h.raw(), buf, bytes, &write);
-        if(!success) throw error {"cannot write file"};
-        return write;
+        return write(h, buf, bytes);
+    }
+
+    handle handle() {
+        return {h.raw()};
     }
 };
+
+using file = basic_file<managed_handle>;
 
 inline file create_file(
     std::string name,
@@ -108,5 +106,22 @@ inline file open_existing_file_for_reading(std::string name) {
 inline file create_file_for_writing(std::string name) {
     return create_file(name, {access::write}, {}, disposition::always_create, {file_attrib::normal});
 }
+
+enum class std_handle_type {
+    input = -10, output = -11, error = -12
+};
+
+inline handle get_std_handle(std_handle_type std_h) {
+    void* h = internal::get_std_handle(int(std_h));
+
+    if(h == (void*)(long long)-1)
+        throw error { "cannot get std handler" };
+
+    return {h};
+}
+
+inline handle get_std_input_handle() { return get_std_handle(std_handle_type::input); }
+inline handle get_std_output_handle() { return get_std_handle(std_handle_type::output); }
+inline handle get_std_error_handle() { return get_std_handle(std_handle_type::error); }
 
 }
