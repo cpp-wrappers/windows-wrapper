@@ -5,25 +5,45 @@
 
 namespace windows {
 
+struct handle;
+
 namespace internal {
+    static inline void* invalid_handle = (void*)(long long) -1;
+
+    inline handle create_handle(void* raw);
+    inline void* raw(const handle& h);
     bool close_handle(void* h);
 }
 
 struct handle {
+    friend inline void* internal::raw(const handle&);
+    friend inline handle internal::create_handle(void* raw);
+
 protected:
-    void* raw_handle;
-
+    void* raw = internal::invalid_handle;
+    handle(void* h) : raw{h} {}
 public:
-    handle(void* h) : raw_handle{h} {}
+    handle(const handle&) = delete;
+    handle& operator=(const handle&) = delete;
 
-    void* raw() const { return raw_handle; }
+    handle(handle&& r) : raw{ std::exchange(r.raw, nullptr) } {}
+    handle& operator=(handle&& r) { std::exchange(r.raw, nullptr); return *this; }
 };
 
-struct managed_handle : handle {
-    using handle::handle;
+inline handle internal::create_handle(void* raw) {
+    return {raw};
+}
 
-    ~managed_handle() noexcept(false) {
-        if(!internal::close_handle(std::exchange(raw_handle, nullptr)))
+inline void* internal::raw(const handle& h) {
+    return (void*)h.raw;
+}
+
+class handle_with_generic_close : public handle {
+protected:
+    using handle::handle;
+public:
+    ~handle_with_generic_close() noexcept(false) {
+        if(raw != internal::invalid_handle && !internal::close_handle(std::exchange(raw, internal::invalid_handle)))
             throw error{ "cannot close handle" };
     }
 };

@@ -42,44 +42,35 @@ enum class file_attrib : unsigned {
     temporary = 0x100
 };
 
-inline unsigned long read(const handle& h, auto* buf, int len) {
+inline unsigned long read(const handle& h, std::byte* buf, int bytes) {
     unsigned long read;
-    bool success = internal::read_file(h.raw(), buf, sizeof(decltype(*buf))*len, &read);
+    bool success = internal::read_file(internal::raw(h), buf, bytes, &read);
     if(!success) throw error { "cannot read file"};
     return read;
 }
 
-inline unsigned long write(const handle& h, auto* buf, int len) {
+inline unsigned long write(const handle& h, std::byte* buf, int bytes) {
     unsigned long write;
-    bool success = internal::write_file(h.raw(), buf, sizeof(decltype(*buf))*len, &write);
+    bool success = internal::write_file(internal::raw(h), buf, bytes, &write);
     if(!success) throw error {"cannot write file"};
     return write;
 }
 
-
-template<class HandleT>
-class basic_file {
-    HandleT h;
+class file_handle : public handle_with_generic_close {
 
 public:
-    basic_file(void* raw_handle) : h{raw_handle}{}
+    file_handle(void* raw) : handle_with_generic_close(raw) {}
 
-    unsigned long read(void* buf, int bytes) {
-        return read(h, buf, bytes);
+    unsigned long read(std::byte* buf, int bytes) {
+        return windows::read(*this, buf, bytes);
     }
 
-    unsigned long write(void* buf, int bytes) {
-        return write(h, buf, bytes);
-    }
-
-    handle handle() {
-        return {h.raw()};
+    unsigned long write(std::byte* buf, int bytes) {
+        return windows::write(*this, buf, bytes);
     }
 };
 
-using file = basic_file<managed_handle>;
-
-inline file create_file(
+inline file_handle create_file(
     std::wstring name,
     std::initializer_list<access> access_mode,
     std::initializer_list<share> sm,
@@ -94,17 +85,17 @@ inline file create_file(
         internal::make_bit_field(fa)
     );
 
-    if(h == (void*)(long long)-1)
+    if(h == internal::invalid_handle)
         throw error {"cannot open file"};
 
     return {h};
 }
 
-inline file open_existing_file_for_reading(std::wstring name) {
+inline file_handle open_existing_file_for_reading(std::wstring name) {
     return create_file(name, {access::read}, {share::read}, disposition::open_existing, {file_attrib::normal});
 }
 
-inline file create_file_for_writing(std::wstring name) {
+inline file_handle create_file_for_writing(std::wstring name) {
     return create_file(name, {access::write}, {}, disposition::always_create, {file_attrib::normal});
 }
 
@@ -115,10 +106,10 @@ enum class std_handle_type {
 inline handle get_std_handle(std_handle_type std_h) {
     void* h = internal::get_std_handle(int(std_h));
 
-    if(h == (void*)(long long)-1)
+    if(h == internal::invalid_handle)
         throw error { "cannot get std handler" };
 
-    return {h};
+    return internal::create_handle(h);
 }
 
 inline handle get_std_input_handle() { return get_std_handle(std_handle_type::input); }
