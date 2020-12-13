@@ -4,6 +4,7 @@
 #include <memory>
 #include <iterator>
 #include <utility>
+#include <cxx_util/flags.hpp>
 
 namespace windows {
 

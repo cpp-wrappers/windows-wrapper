@@ -38,11 +38,11 @@ inline void* internal::raw(const handle& h) {
     return (void*)h.raw;
 }
 
-class handle_with_generic_close : public handle {
+class kernel_object_handle : public handle {
 protected:
     using handle::handle;
 public:
-    ~handle_with_generic_close() noexcept(false) {
+    ~kernel_object_handle() noexcept(false) {
         if(raw != internal::invalid_handle && !internal::close_handle(std::exchange(raw, internal::invalid_handle)))
             throw error{ "cannot close handle" };
     }

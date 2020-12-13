@@ -8,6 +8,7 @@
 #include "internal.hpp"
 #include <system_error>
 #include "error.hpp"
+#include "cxx_util/flags.hpp"
 
 namespace windows {
 
@@ -56,10 +57,10 @@ inline unsigned long write(const handle& h, std::byte* buf, int bytes) {
     return write;
 }
 
-class file_handle : public handle_with_generic_close {
+class file_handle : public kernel_object_handle {
 
 public:
-    file_handle(void* raw) : handle_with_generic_close(raw) {}
+    file_handle(void* raw) : kernel_object_handle(raw) {}
 
     unsigned long read(std::byte* buf, int bytes) {
         return windows::read(*this, buf, bytes);
@@ -72,17 +73,17 @@ public:
 
 inline file_handle create_file(
     std::wstring name,
-    std::initializer_list<access> access_mode,
-    std::initializer_list<share> sm,
+    util::flags<access> access_mode,
+    util::flags<share> sm,
     disposition d,
-    std::initializer_list<file_attrib> fa
+    util::flags<file_attrib> fa
 ) {
     void* h = internal::create_file(
         name.c_str(),
-        internal::make_bit_field(access_mode),
-        internal::make_bit_field(sm),
+        access_mode.to<int>(),
+        sm.to<int>(),
         (unsigned) d,
-        internal::make_bit_field(fa)
+        fa.to<int>()
     );
 
     if(h == internal::invalid_handle)
