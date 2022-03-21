@@ -28,18 +28,3 @@ namespace win {
 } // win
 
 static_assert(sizeof(win::find_data) > sizeof(WIN32_FIND_DATAW));
-
-static_assert(
-	__builtin_offsetof(win::find_data, attributes) ==
-	__builtin_offsetof(WIN32_FIND_DATAW, dwFileAttributes)
-);
-
-static_assert(
-	__builtin_offsetof(win::find_data, creation_time) ==
-	__builtin_offsetof(WIN32_FIND_DATAW, ftCreationTime)
-);
-
-static_assert(
-	__builtin_offsetof(win::find_data, file_name) ==
-	__builtin_offsetof(WIN32_FIND_DATAW, cFileName)
-);

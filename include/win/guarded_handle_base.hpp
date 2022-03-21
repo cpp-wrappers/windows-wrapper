@@ -1,6 +1,6 @@
 #pragma once
 
-#include "default_unexpected_handler.hpp"
+#include "unexpected_handler.hpp"
 
 #include <core/handle/declaration.hpp>
 #include <core/exchange.hpp>
@@ -27,10 +27,18 @@ namespace win {
 		~guarded_handle_base() {
 			if(m_handle.value != INVALID_HANDLE_VALUE) {
 				if(!CloseFunction(handle())) {
-					win::default_unexpected_handler();
+					win::unexpected_handler();
 				}
 				m_handle.value = INVALID_HANDLE_VALUE;
 			}
+		}
+
+		auto& value() const {
+			return handle().value();
+		}
+
+		auto& value() {
+			return handle().value();
 		}
 
 	};

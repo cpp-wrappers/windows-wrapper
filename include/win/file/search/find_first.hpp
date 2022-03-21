@@ -4,7 +4,7 @@
 #include "find_data.hpp"
 #include "../name.hpp"
 #include "../../error.hpp"
-#include "../../default_unexpected_handler.hpp"
+#include "../../unexpected_handler.hpp"
 
 #include <core/expected.hpp>
 #include <core/meta/types/are_exclusively_satsify_predicates.hpp>
@@ -41,7 +41,7 @@ namespace win {
 	handle<win::search> find_first_file(Args&&... args) {
 		auto result = win::try_find_first_file(forward<Args>(args)...);
 		if(result.is_unexpected()) {
-			win::default_unexpected_handler(result.get_unexpected());
+			win::unexpected_handler(result.get_unexpected());
 		}
 		return result.get_expected();
 	}

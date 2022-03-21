@@ -2,6 +2,7 @@
 
 #include "../handle_base.hpp"
 
+#include <core/integer.hpp>
 #include <core/handle/declaration.hpp>
 
 namespace win {
@@ -11,4 +12,10 @@ namespace win {
 } // win
 
 template<>
-struct handle<win::file> : win::handle_base {};
+struct handle<win::file> : win::handle_base {
+
+	inline uint64 get_size() const;
+
+};
+
+#include "get_size.hpp"
