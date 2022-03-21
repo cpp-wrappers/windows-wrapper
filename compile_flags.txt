@@ -1,2 +1,14 @@
 -std=c++20
+-nostdinc++
+
+-Wall
+-Wextra
+
+-fno-exceptions
+-fno-rtti
+-ftemplate-backtrace-limit=0
+-fmodules
+
 -Iinclude
+-I../core/include
+-Xclang -fimplicit-module-maps
