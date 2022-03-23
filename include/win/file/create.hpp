@@ -7,11 +7,11 @@
 #include "attribute.hpp"
 #include "name.hpp"
 #include "../error.hpp"
-#include "../default_unexpected_handler.hpp"
+#include "../unexpected_handler.hpp"
 
 #include <core/wc_string.hpp>
 #include <core/expected.hpp>
-#include <core/meta/types/are_exclusively_satsify_predicates.hpp>
+#include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
 #include <core/meta/decayed_same_as.hpp>
 
 #include <fileapi.h>
@@ -20,7 +20,7 @@
 namespace win {
 
 	template<typename... Args>
-	requires types::are_exclusively_satsify_predicates<
+	requires types::are_exclusively_satisfying_predicates<
 		types::are_contain_one_decayed<win::file_name>,
 		types::are_contain_one_decayed<win::file_accesses>,
 		types::are_may_contain_one_decayed<win::file_shares>,
@@ -33,7 +33,7 @@ namespace win {
 			elements::decayed<win::file_name>(args...);
 
 		win::file_accesses access =
-			elements::decayed<win::file_access>(args...);
+			elements::decayed<win::file_accesses>(args...);
 
 		win::file_shares shares{};
 
@@ -75,7 +75,7 @@ namespace win {
 	handle<win::file> create_file(Args&&... args) {
 		auto result = win::try_create_file(forward<Args>(args)...);
 		if(result.is_unexpected()) {
-			win::default_unexpected_handler(result.get_unexpected());
+			win::unexpected_handler(result.get_unexpected());
 		}
 		return result.get_expected();
 	}

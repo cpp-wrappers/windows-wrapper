@@ -1,16 +1,13 @@
 #pragma once
 
 #include "handle.hpp"
-#include "bytes_read.hpp"
+#include "bytes_written.hpp"
 #include "../error.hpp"
-#include "../unexpected_handler.hpp"
 
-#include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
-#include <core/handle/possibly_guarded_of.hpp>
-#include <core/range/basic.hpp>
-#include <core/range/value_type.hpp>
-#include <core/wrapper/of_integer.hpp>
 #include <core/expected.hpp>
+#include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
+#include <core/range/basic.hpp>
+#include <core/handle/possibly_guarded_of.hpp>
 
 namespace win {
 
@@ -19,29 +16,29 @@ namespace win {
 		types::are_contain_one_possibly_guarded_handle_of<win::file>,
 		types::are_contain_basic_range
 	>::for_types<Args...>
-	expected<win::bytes_read, win::error>
-	try_read_file(Args&&... args) {
-		auto& file = elements::possibly_guarded_handle_of<win::file>(args...);
+	expected<win::bytes_written, win::error>
+	try_write_file(Args&&... args) {
+		auto& handle = elements::possibly_guarded_handle_of<win::file>(args...);
 		auto& buffer = elements::basic_range(args...);
 
-		uint32 bytes_read;
+		win::bytes_written written;
 
-		if(!ReadFile(
-			(HANDLE) file.value(),
-			(LPVOID) buffer.data(),
+		if(!WriteFile(
+			(HANDLE) handle.value(),
+			(LPCVOID) buffer.data(),
 			(DWORD) buffer.size() * sizeof(range::value_type<decltype(buffer)>),
-			(LPDWORD) &bytes_read,
+			(LPDWORD) &written,
 			(LPOVERLAPPED) nullptr
 		)) {
 			return win::get_last_error();
 		}
-
-		return win::bytes_read{ bytes_read };
+		
+		return written;
 	}
 
 	template<typename... Args>
-	win::bytes_read read_file(Args&&... args) {
-		auto result = win::try_read_file(forward<Args>(args)...);
+	win::bytes_written write_file(Args&&... args) {
+		auto result = win::try_write_file(forward<Args>(args)...);
 		if(result.is_unexpected()) {
 			win::unexpected_handler(result.get_unexpected());
 		}
@@ -51,6 +48,6 @@ namespace win {
 } // win
 
 template<typename... Args>
-win::bytes_read handle<win::file>::read(Args&&... args) const {
-	return win::read_file(*this, forward<Args>(args)...);
+win::bytes_written handle<win::file>::write(Args&&... args) const {
+	return win::write_file(*this, forward<Args>(args)...);
 }

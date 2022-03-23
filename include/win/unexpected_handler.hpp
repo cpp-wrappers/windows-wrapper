@@ -7,12 +7,10 @@
 namespace win {
 
 	[[ noreturn ]]
-	inline void unexpected_handler() {
-		abort();
-	}
+	void unexpected_handler();
 
 	[[ noreturn ]]
-	inline void unexpected_handler([[maybe_unused]] win::error error);
+	void unexpected_handler([[maybe_unused]] win::error error);
 
 } // win
 

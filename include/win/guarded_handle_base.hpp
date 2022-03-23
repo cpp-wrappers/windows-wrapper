@@ -18,18 +18,18 @@ namespace win {
 		{}
 
 		guarded_handle_base(guarded_handle_base&& other) {
-			m_handle.value = exchange(other.hande, INVALID_HANDLE_VALUE);
+			m_handle.value() = exchange(other.hande, INVALID_HANDLE_VALUE);
 		}
 
 		::handle<ObjectType>& handle() { return m_handle; }
 		const ::handle<ObjectType>& handle() const { return m_handle; }
 
 		~guarded_handle_base() {
-			if(m_handle.value != INVALID_HANDLE_VALUE) {
+			if(m_handle.value() != INVALID_HANDLE_VALUE) {
 				if(!CloseFunction(handle())) {
 					win::unexpected_handler();
 				}
-				m_handle.value = INVALID_HANDLE_VALUE;
+				m_handle.value() = INVALID_HANDLE_VALUE;
 			}
 		}
 
