@@ -16,13 +16,13 @@ namespace win {
 		return GetCurrentDirectory(range.size(), range.data());
 	}
 
-	template<typename F>
-	void view_current_working_directory(F&& f) {
+	template<typename Handler>
+	void view_current_working_directory(Handler&& handler) {
 		auto len = get_current_directory_path_length();
 		wchar_t storage[len];
 		span s{ storage, len };
 		win::get_current_directory_path(s);
-		f(s);
+		handler(s);
 	}
 
 } // win

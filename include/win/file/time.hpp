@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/wrapper/of_integer.hpp>
+#include <core/integer.hpp>
 
 namespace win {
 

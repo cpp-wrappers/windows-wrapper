@@ -1,7 +1,6 @@
 #pragma once
 
 #include "handle.hpp"
-#include "allocation_flag.hpp"
 #include "../error.hpp"
 #include "../unexpected_handler.hpp"
 
@@ -9,14 +8,13 @@
 #include <core/flag_enum.hpp>
 #include <core/meta/decayed_same_as.hpp>
 #include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
-#include <core/wrapper/of_integer.hpp>
 
 #include <heapapi.h>
 
 namespace win {
 
-	struct initial_size : wrapper::of_integer<nuint> {};
-	struct maximum_size : wrapper::of_integer<nuint> {};
+	struct initial_size { nuint _; operator nuint () const { return _; } };
+	struct maximum_size { nuint _; operator nuint () const { return _; } };
 
 	template<typename... Args>
 	requires types::are_exclusively_satisfying_predicates<

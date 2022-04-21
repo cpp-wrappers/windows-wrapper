@@ -2,7 +2,7 @@
 
 #include "../../handle_base.hpp"
 
-#include <core/handle/declaration.hpp>
+#include <core/handle.hpp>
 
 namespace win {
 

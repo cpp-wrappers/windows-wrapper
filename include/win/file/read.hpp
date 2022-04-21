@@ -6,22 +6,21 @@
 #include "../unexpected_handler.hpp"
 
 #include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
-#include <core/handle/possibly_guarded_of.hpp>
+#include <core/meta/decayed_same_as.hpp>
 #include <core/range/basic.hpp>
 #include <core/range/value_type.hpp>
-#include <core/wrapper/of_integer.hpp>
 #include <core/expected.hpp>
 
 namespace win {
 
 	template<typename... Args>
 	requires types::are_exclusively_satisfying_predicates<
-		types::are_contain_one_possibly_guarded_handle_of<win::file>,
+		types::are_contain_one_decayed<handle<win::file>>,
 		types::are_contain_basic_range
 	>::for_types<Args...>
 	expected<win::bytes_read, win::error>
 	try_read_file(Args&&... args) {
-		auto& file = elements::possibly_guarded_handle_of<win::file>(args...);
+		auto file = elements::decayed<handle<win::file>>(args...);
 		auto& buffer = elements::basic_range(args...);
 
 		uint32 bytes_read;

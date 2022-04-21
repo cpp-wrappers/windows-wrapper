@@ -2,13 +2,11 @@
 
 #include "handle.hpp"
 
-#include <core/handle/possibly_guarded_of.hpp>
-
 #include <windows.h>
 
 namespace win {
 
-	uint64 get_file_size(possibly_guarded_handle_of<win::file> auto&& file) {
+	uint64 inline get_file_size(handle<win::file> file) {
 		uint32 high;
 
 		uint32 low = GetFileSize(

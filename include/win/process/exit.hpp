@@ -2,7 +2,7 @@
 
 #include <core/integer.hpp>
 
-#include <processthreadsapi.h>
+#include <windows.h>
 
 namespace win {
 
@@ -10,5 +10,9 @@ namespace win {
 	inline void exit_process(uint32 code) {
 		ExitProcess(code);
 	}
+
+	inline void fatal_exit(uint32 code) {
+		FatalExit(code);
+	} 
 
 } // win

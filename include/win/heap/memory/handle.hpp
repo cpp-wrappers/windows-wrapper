@@ -6,7 +6,7 @@ namespace win {
 
 } // win
 
-#include <core/handle/declaration.hpp>
+#include <core/handle.hpp>
 #include <core/integer.hpp>
 
 template<>

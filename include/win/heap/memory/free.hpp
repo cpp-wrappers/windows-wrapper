@@ -5,7 +5,6 @@
 #include "../../unexpected_handler.hpp"
 
 #include <core/meta/decayed_same_as.hpp>
-#include <core/handle/possibly_guarded_of.hpp>
 #include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
 
 namespace win {
@@ -16,13 +15,12 @@ namespace win {
 
 	template<typename... Args>
 	requires types::are_exclusively_satisfying_predicates<
-		types::are_contain_one_possibly_guarded_handle_of<win::heap>,
+		types::are_contain_one_decayed<handle<win::heap>>,
 		types::are_may_contain_one_decayed<win::free_flag>,
 		types::are_contain_one_decayed<handle<win::heap_memory>>
 	>::for_types<Args...>
 	bool try_free_heap_memory(Args&&... args) {
-		auto& handle =
-			elements::possibly_guarded_handle_of<win::heap>(args...);
+		auto heap_memory = elements::decayed<handle<win::heap>>(args...);
 
 		win::free_flag flag{};
 
@@ -33,7 +31,7 @@ namespace win {
 		auto mem = elements::decayed<::handle<win::heap_memory>>(args...);
 
 		return HeapFree(
-			(HANDLE) handle.value(),
+			(HANDLE) heap_memory,
 			(DWORD) flag,
 			(LPVOID) mem.value()
 		);

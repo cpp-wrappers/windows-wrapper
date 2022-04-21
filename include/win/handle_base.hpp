@@ -1,7 +1,5 @@
 #pragma once
 
-#include <core/handle/declaration.hpp>
-
 namespace win {
 
 	struct handle_base {

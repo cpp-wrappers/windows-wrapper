@@ -6,23 +6,20 @@
 
 #include <core/expected.hpp>
 #include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
-#include <core/handle/possibly_guarded_of.hpp>
 #include <core/meta/decayed_same_as.hpp>
 
 namespace win {
 
 	template<typename... Args>
 	requires types::are_exclusively_satisfying_predicates<
-		types::are_contain_one_possibly_guarded_handle_of<win::search>,
+		types::are_contain_one_decayed<handle<win::search>>,
 		types::are_contain_one_decayed<win::find_data>
 	>::for_types<Args...>
 	win::error
 	try_find_next_file(Args&&... args) {
-		auto handle =
-			elements::possibly_guarded_handle_of<win::search>(args...);
+		auto handle = elements::decayed<::handle<win::search>>(args...);
 
-		auto& find_data =
-			elements::decayed<win::find_data>(args...);
+		auto& find_data = elements::decayed<win::find_data>(args...);
 
 		auto result = FindNextFileW(
 			(HANDLE) handle.value(),
@@ -32,6 +29,7 @@ namespace win {
 		if(result == 0) {
 			return win::get_last_error();
 		}
+
 		return win::error::success;
 	}
 

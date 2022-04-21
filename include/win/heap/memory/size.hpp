@@ -4,7 +4,6 @@
 
 #include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
 #include <core/meta/decayed_same_as.hpp>
-#include <core/handle/possibly_guarded_of.hpp>
 
 namespace win {
 
@@ -14,12 +13,12 @@ namespace win {
 
 	template<typename... Args>
 	requires types::are_exclusively_satisfying_predicates<
-		types::are_contain_one_possibly_guarded_handle_of<win::heap>,
+		types::are_contain_one_decayed<handle<win::heap>>,
 		types::are_may_contain_decayed<win::size_flag>,
 		types::are_contain_one_decayed<handle<win::heap_memory>>
 	>::for_types<Args...>
 	nuint try_get_heap_memory_size(Args&&... args) {
-		auto& heap = elements::possibly_guarded_handle_of<win::heap>(args...);
+		auto heap = elements::decayed<handle<win::heap>>(args...);
 		
 		win::size_flag flag{};
 

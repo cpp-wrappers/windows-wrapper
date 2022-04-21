@@ -6,4 +6,6 @@ namespace win {
 
 	struct file_name : wc_string {};
 
+	using path = win::file_name;
+
 } // win

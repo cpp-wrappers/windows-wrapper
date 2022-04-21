@@ -7,24 +7,24 @@
 #include <core/expected.hpp>
 #include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
 #include <core/range/basic.hpp>
-#include <core/handle/possibly_guarded_of.hpp>
+#include <core/meta/decayed_same_as.hpp>
 
 namespace win {
 
 	template<typename... Args>
 	requires types::are_exclusively_satisfying_predicates<
-		types::are_contain_one_possibly_guarded_handle_of<win::file>,
+		types::are_contain_one_decayed<handle<win::file>>,
 		types::are_contain_basic_range
 	>::for_types<Args...>
 	expected<win::bytes_written, win::error>
 	try_write_file(Args&&... args) {
-		auto& handle = elements::possibly_guarded_handle_of<win::file>(args...);
+		auto file = elements::decayed<handle<win::file>>(args...);
 		auto& buffer = elements::basic_range(args...);
 
 		win::bytes_written written;
 
 		if(!WriteFile(
-			(HANDLE) handle.value(),
+			(HANDLE) file.value(),
 			(LPCVOID) buffer.data(),
 			(DWORD) buffer.size() * sizeof(range::value_type<decltype(buffer)>),
 			(LPDWORD) &written,

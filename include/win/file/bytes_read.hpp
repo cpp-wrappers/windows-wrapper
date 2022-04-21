@@ -1,9 +1,9 @@
 #pragma once
 
-#include <core/wrapper/of_integer.hpp>
+#include <core/integer.hpp>
 
 namespace win {
 
-	struct bytes_read : wrapper::of_integer<uint32> {};
+	struct bytes_read { uint32 _; };
 
 } // win
