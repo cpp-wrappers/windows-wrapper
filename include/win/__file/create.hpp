@@ -44,7 +44,7 @@ namespace win {
 			is_same_as<win::file_attributes>.while_decayed
 		> <= 1
 	>
-	expected<handle<win::file>, win::error>
+	expected<body<win::file>, win::error>
 	try_create_file(Args&&... args) {
 		win::file_name name =
 			tuple{ args... }.template get_satisfying_predicate<
@@ -98,16 +98,16 @@ namespace win {
 			return win::get_last_error();
 		}
 
-		return handle;
+		return body<win::file>{ handle.underlying() };
 	}
 
 	template<typename... Args>
-	handle<win::file> create_file(Args&&... args) {
+	body<win::file> create_file(Args&&... args) {
 		auto result = win::try_create_file(forward<Args>(args)...);
 		if(result.is_unexpected()) {
 			win::unexpected_handler(result.get_unexpected());
 		}
-		return result.get_expected();
+		return move(result.get_expected());
 	}
 
 } // win
