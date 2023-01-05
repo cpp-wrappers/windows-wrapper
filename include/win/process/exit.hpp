@@ -1,13 +1,17 @@
 #pragma once
 
-#include <core/integer.hpp>
+#include <integer.hpp>
 
-#include <windows.h>
+__declspec(dllimport) extern "C" __declspec(noreturn)
+void ExitProcess(unsigned exit_code);
+
+__declspec(dllimport) extern "C"
+void FatalExit(int exit_code);
 
 namespace win {
 
 	[[ noreturn ]]
-	inline void exit_process(uint32 code) {
+	inline void exit(uint32 code) {
 		ExitProcess(code);
 	}
 

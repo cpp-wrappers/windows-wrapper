@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/flag_enum.hpp>
+#include <enum_flags.hpp>
 
 namespace win {
 
@@ -19,6 +19,6 @@ namespace win {
 		temporary     = 0x0100
 	};
 
-	using file_attributes = flag_enum<win::file_attribute>;
+	using file_attributes = enum_flags<win::file_attribute>;
 
 } // win

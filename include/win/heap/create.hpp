@@ -4,13 +4,6 @@
 #include "../error.hpp"
 #include "../unexpected_handler.hpp"
 
-#include <core/expected.hpp>
-#include <core/flag_enum.hpp>
-#include <core/meta/decayed_same_as.hpp>
-#include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
-
-#include <heapapi.h>
-
 namespace win {
 
 	struct initial_size { nuint _; operator nuint () const { return _; } };

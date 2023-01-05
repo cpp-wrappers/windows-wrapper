@@ -1,10 +1,5 @@
 #pragma once
 
-#include <core/span.hpp>
-#include <core/range/of_value_type_same_as.hpp>
-
-#include <windows.h>
-
 namespace win {
 
 	inline nuint get_current_directory_path_length() {

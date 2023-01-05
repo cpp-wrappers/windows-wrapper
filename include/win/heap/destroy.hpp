@@ -4,8 +4,6 @@
 #include "../error.hpp"
 #include "../unexpected_handler.hpp"
 
-#include <heapapi.h>
-
 namespace win {
 
 	inline bool try_destroy_heap(handle<win::heap> handle) {

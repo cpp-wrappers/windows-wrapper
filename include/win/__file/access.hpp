@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/flag_enum.hpp>
+#include <enum_flags.hpp>
 
 namespace win {
 
@@ -9,6 +9,6 @@ namespace win {
 		write = 0x40000000
 	};
 
-	using file_accesses = flag_enum<win::file_access>;
+	using file_accesses = enum_flags<win::file_access>;
 
 } // win

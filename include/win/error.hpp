@@ -1,6 +1,8 @@
 #pragma once
 
-#include "errhandlingapi.h"
+#include <integer.hpp>
+
+__declspec(dllimport) extern "C" uint32 GetLastError();
 
 namespace win {
 

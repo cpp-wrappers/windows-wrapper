@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/flag_enum.hpp>
+#include <enum_flags.hpp>
 
 namespace win {
 
@@ -10,6 +10,6 @@ namespace win {
 		write    = 0x00000002
 	};
 
-	using file_shares = flag_enum<file_share>;
+	using file_shares = enum_flags<file_share>;
 
 } // win
