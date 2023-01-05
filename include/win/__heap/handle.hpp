@@ -7,12 +7,16 @@ namespace win {
 
 } // win
 
-#include "../handle_base.hpp"
-
-#include <core/handle.hpp>
+#include <handle.hpp>
 
 template<>
-struct handle<win::heap> : win::handle_base {
+struct handle_underlying_t<win::heap> {
+	using type = void*;
+	static constexpr type invalid = nullptr;
+};
+
+template<>
+struct handle_interface<win::heap> : handle_interface_base<win::heap> {
 
 	template<typename... Args>
 	handle<win::heap_memory> allocate(Args&&... args) const;
@@ -21,6 +25,3 @@ struct handle<win::heap> : win::handle_base {
 	void free(Args&&... args) const;
 
 };
-
-#include "./memory/allocate.hpp"
-#include "./memory/free.hpp"
