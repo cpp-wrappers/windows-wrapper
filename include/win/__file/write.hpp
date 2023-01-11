@@ -25,21 +25,16 @@ namespace win {
 
 	template<typename... Args>
 	requires types<Args...>::template exclusively_satisfy_predicates<
-		contain_one_satisfying_predicate<
-			is_same_as<handle<win::file>>.while_decayed
-		>,
-		contain_one_satisfying_predicate<is_basic_range>
+		count_of_decayed_same_as<handle<win::file>> == 1,
+		count_of_satisfying_predicate<is_basic_range> == 1
 	>
 	expected<win::bytes_written, win::error>
 	try_write_file(Args&&... args) {
-		handle<win::file> file =
-			tuple{ args... }.template get_satisfying_predicate<
-				is_same_as<handle<win::file>>.while_decayed
-			>();
+		handle<win::file> file = tuple{ args... }.template
+			get_decayed_same_as<handle<win::file>>();
 
-		auto& buffer = tuple{ args... }.template get_satisfying_predicate<
-			is_basic_range
-		>();
+		auto& buffer = tuple{ args... }.template
+			get_satisfying_predicate<is_basic_range>();
 
 		win::bytes_written written;
 

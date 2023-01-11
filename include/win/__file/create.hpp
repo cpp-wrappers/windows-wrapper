@@ -28,60 +28,39 @@ namespace win {
 
 	template<typename... Args>
 	requires types<Args...>::template exclusively_satisfy_predicates<
-		count_of_satisfying_predicate<
-			is_same_as<win::file_name>.while_decayed
-		> == 1,
-		count_of_satisfying_predicate<
-			is_same_as<win::file_accesses>.while_decayed
-		> == 1,
-		count_of_satisfying_predicate<
-			is_same_as<win::file_disposition>.while_decayed
-		> == 1,
-		count_of_satisfying_predicate<
-			is_same_as<win::file_shares>.while_decayed
-		> <= 1,
-		count_of_satisfying_predicate<
-			is_same_as<win::file_attributes>.while_decayed
-		> <= 1
+		count_of_decayed_same_as<win::file_name> == 1,
+		count_of_decayed_same_as<win::file_accesses> == 1,
+		count_of_decayed_same_as<win::file_disposition> == 1,
+		count_of_decayed_same_as<win::file_shares> <= 1,
+		count_of_decayed_same_as<win::file_attributes> <= 1
 	>
 	expected<body<win::file>, win::error>
 	try_create_file(Args&&... args) {
-		win::file_name name =
-			tuple{ args... }.template get_satisfying_predicate<
-				is_same_as<win::file_name>.while_decayed
-			>();
+		win::file_name name = tuple{ args... }.template
+			get_decayed_same_as<win::file_name>();
 
-		win::file_accesses access =
-			tuple{ args... }.template get_satisfying_predicate<
-				is_same_as<win::file_accesses>.while_decayed
-			>();
+		win::file_accesses access = tuple{ args... }.template
+			get_decayed_same_as<win::file_accesses>();
 
-		
-		win::file_disposition disposition =
-			tuple{ args... }.template get_satisfying_predicate<
-				is_same_as<win::file_disposition>.while_decayed
-			>();
+		win::file_disposition disposition = tuple{ args... }.template
+			get_decayed_same_as<win::file_disposition>();
 
 		win::file_shares shares{};
 
-		if constexpr (types<Args...>::template count_of_satisfying_predicate<
-			is_same_as<win::file_shares>.while_decayed
-		> == 1) {
-			shares =
-				tuple{ args... }.template get_satisfying_predicate<
-					is_same_as<win::file_shares>.while_decayed
-				>();
+		if constexpr (types<Args...>::template
+			count_of_decayed_same_as<win::file_shares> > 0
+		) {
+			shares = tuple{ args... }.template
+				get_decayed_same_as<win::file_shares>();
 		}
 
 		win::file_attributes attributes{};
 
-		if constexpr (types<Args...>::template count_of_satisfying_predicate<
-			is_same_as<win::file_attributes>.while_decayed
-		> == 1) {
-			shares =
-				tuple{ args... }.template get_satisfying_predicate<
-					is_same_as<win::file_attributes>.while_decayed
-				>();
+		if constexpr (types<Args...>::template
+			count_of_decayed_same_as<win::file_attributes> > 0
+		) {
+			shares = tuple{ args... }.template
+				get_decayed_same_as<win::file_attributes>();
 		}
 
 		handle<win::file> handle = CreateFileW(

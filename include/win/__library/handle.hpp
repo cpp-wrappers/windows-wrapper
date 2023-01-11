@@ -22,8 +22,8 @@ template<>
 struct handle_interface<win::library> : handle_interface_base<win::library> {
 
 	inline expected<void*, win::error>
-	try_get_proc_address(c_string<c_string_type::unknown_size>);
+	try_get_proc_address(any_c_string auto);
 
-	inline void* get_proc_address(c_string<c_string_type::unknown_size>);
+	inline void* get_proc_address(any_c_string auto);
 
 };

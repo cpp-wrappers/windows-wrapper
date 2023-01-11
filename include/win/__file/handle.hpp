@@ -36,7 +36,7 @@ struct handle_interface<win::file> : handle_interface_base<win::file> {
 #include "../unexpected_handler.hpp"
 
 template<>
-constexpr void body<win::file>::do_destroy() {
+inline void body<win::file>::do_destroy() {
 	bool result = win::try_close_handle(this->soul_handle_.underlying());
 	if(!result) {
 		win::error err = win::get_last_error();

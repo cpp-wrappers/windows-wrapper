@@ -7,6 +7,6 @@
 __declspec (dllimport) extern "C" int FreeLibrary(void* library);
 
 template<>
-constexpr void body<win::library>::do_destroy() {
+inline void body<win::library>::do_destroy() {
 	::FreeLibrary(this->soul_handle_.underlying());
 }
