@@ -5,7 +5,7 @@ __declspec(dllimport) extern "C" void* GetProcAddress(
 );
 
 #include "./handle.hpp"
-#include "../unexpected_handler.hpp"
+#include "../unhandled.hpp"
 
 #include <c_string.hpp>
 
@@ -22,7 +22,7 @@ inline void* handle_interface<win::library>::
 get_proc_address(any_c_string auto name) {
 	expected<void*, win::error> result = try_get_proc_address(name);
 	if(result.is_unexpected()) {
-		win::unexpected_handler(result.get_unexpected());
+		win::unhandled(result.get_unexpected());
 	}
 	return result.get_expected();
 }

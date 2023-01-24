@@ -8,7 +8,7 @@
 #include "./name.hpp"
 #include "./security_attributes.hpp"
 #include "../error.hpp"
-#include "../unexpected_handler.hpp"
+#include "../unhandled.hpp"
 
 #include <types.hpp>
 #include <tuple.hpp>
@@ -34,7 +34,7 @@ namespace win {
 		count_of_decayed_same_as<win::file_shares> <= 1,
 		count_of_decayed_same_as<win::file_attributes> <= 1
 	>
-	expected<body<win::file>, win::error>
+	expected<handle<win::file>, win::error>
 	try_create_file(Args&&... args) {
 		win::file_name name = tuple{ args... }.template
 			get_decayed_same_as<win::file_name>();
@@ -77,16 +77,17 @@ namespace win {
 			return win::get_last_error();
 		}
 
-		return body<win::file>{ handle.underlying() };
+		return handle;
 	}
 
 	template<typename... Args>
-	body<win::file> create_file(Args&&... args) {
-		auto result = win::try_create_file(forward<Args>(args)...);
+	handle<win::file> create_file(Args&&... args) {
+		expected<handle<win::file>, win::error> result
+			= win::try_create_file(forward<Args>(args)...);
 		if(result.is_unexpected()) {
-			win::unexpected_handler(result.get_unexpected());
+			win::unhandled(result.get_unexpected());
 		}
-		return move(result.get_expected());
+		return result.get_expected();
 	}
 
 } // win

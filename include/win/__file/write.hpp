@@ -4,7 +4,7 @@
 #include "./bytes_written.hpp"
 #include "./overlapped.hpp"
 #include "../error.hpp"
-#include "../unexpected_handler.hpp"
+#include "../unhandled.hpp"
 
 #include <types.hpp>
 #include <type.hpp>
@@ -57,7 +57,7 @@ namespace win {
 	win::bytes_written write_file(Args&&... args) {
 		auto result = win::try_write_file(forward<Args>(args)...);
 		if(result.is_unexpected()) {
-			win::unexpected_handler(result.get_unexpected());
+			win::unhandled(result.get_unexpected());
 		}
 		return result.get_expected();
 	}

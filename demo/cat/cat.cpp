@@ -6,7 +6,7 @@
 extern "C" int wWinMain(
 	void*, void*, wchar_t* arg, int
 ) {
-	body<win::file> file = win::create_file(
+	handle<win::file> file = win::create_file(
 		win::file_name{ arg },
 		win::file_accesses{ win::file_access::read },
 		win::file_disposition::open_existing
@@ -21,14 +21,13 @@ extern "C" int wWinMain(
 }
 
 namespace win {
-	[[ noreturn ]]
-	void unexpected_handler() {
+
+	[[ noreturn ]] void unhandled_t::operator () () const {
 		win::exit(-1);
 	}
 
-	[[ noreturn ]]
-	void unexpected_handler([[maybe_unused]] win::error error) {
-		win::exit((uint32) error);
+	[[ noreturn ]] void unhandled_t::operator () (win::error error) const {
+		win::exit((int32) error);
 	}
 
 }

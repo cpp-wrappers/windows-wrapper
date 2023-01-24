@@ -1,6 +1,8 @@
 #pragma once
 
-namespace win {
+#include <integer.hpp>
+
+/*namespace win {
 
 	inline nuint get_current_directory_path_length() {
 		return GetCurrentDirectory(0, nullptr);
@@ -20,4 +22,4 @@ namespace win {
 		handler(s);
 	}
 
-} // win
+} // win */

@@ -33,13 +33,13 @@ struct handle_interface<win::file> : handle_interface_base<win::file> {
 };
 
 #include <body.hpp>
-#include "../unexpected_handler.hpp"
+#include "../unhandled.hpp"
 
 template<>
 inline void body<win::file>::do_destroy() {
 	bool result = win::try_close_handle(this->soul_handle_.underlying());
 	if(!result) {
 		win::error err = win::get_last_error();
-		win::unexpected_handler(err);
+		win::unhandled(err);
 	}
 }
