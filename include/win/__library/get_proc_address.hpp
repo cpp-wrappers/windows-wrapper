@@ -10,7 +10,7 @@ __declspec(dllimport) extern "C" void* GetProcAddress(
 #include <c_string.hpp>
 
 inline expected<void*, win::error> handle_interface<win::library>::
-try_get_proc_address(any_c_string auto name) {
+try_get_proc_address(c_string<char> name) {
 	void* result = GetProcAddress(this->underlying(), name.iterator());
 	if(result == nullptr) {
 		return win::get_last_error();
@@ -19,7 +19,7 @@ try_get_proc_address(any_c_string auto name) {
 }
 
 inline void* handle_interface<win::library>::
-get_proc_address(any_c_string auto name) {
+get_proc_address(c_string<char> name) {
 	expected<void*, win::error> result = try_get_proc_address(name);
 	if(result.is_unexpected()) {
 		win::unhandled(result.get_unexpected());

@@ -38,7 +38,7 @@ namespace win {
 
 		win::bytes_written written;
 
-		if(!WriteFile(
+		if (!WriteFile(
 			file.underlying(),
 			buffer.iterator(),
 			buffer.size() * sizeof(

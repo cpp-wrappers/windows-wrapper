@@ -4,7 +4,7 @@
 
 namespace win {
 
-	struct file_name : c_string<c_string_type::unknown_size, wchar_t> {};
+	struct file_name : c_string<wchar_t> {};
 
 	using path = win::file_name;
 

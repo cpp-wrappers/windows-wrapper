@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../unexpected_handler.hpp"
-#include "../heap/handle.hpp"
+#include "../unhandled.hpp"
+#include "../__heap/handle.hpp"
 
-#include <core/expected.hpp>
+#include <expected.hpp>
 
 #include <heapapi.h>
 
@@ -21,7 +21,7 @@ namespace win {
 	inline handle<win::heap> get_process_heap() {
 		auto result = win::try_get_process_heap();
 		if(result.is_unexpected()) {
-			win::unexpected_handler(result.get_unexpected());
+			win::unhandled(result.get_unexpected());
 		}
 		return result.get_expected();
 	}

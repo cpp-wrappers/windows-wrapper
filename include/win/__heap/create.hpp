@@ -1,8 +1,9 @@
 #pragma once
 
+#include <types.hpp>
 #include "handle.hpp"
 #include "../error.hpp"
-#include "../unexpected_handler.hpp"
+#include "../unhandled.hpp"
 
 namespace win {
 

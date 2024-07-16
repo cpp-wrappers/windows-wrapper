@@ -2,11 +2,11 @@
 
 #include <integer.hpp>
 
-__declspec(dllimport) extern "C" uint32 GetLastError();
+__declspec(dllimport) extern "C" unsigned long GetLastError();
 
 namespace win {
 
-	enum class error {
+	enum class error: unsigned long {
 		success             = 0x00000000,
 		invalid_function    = 0x00000001,
 		file_not_found      = 0x00000002,

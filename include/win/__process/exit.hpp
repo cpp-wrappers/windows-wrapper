@@ -17,6 +17,6 @@ namespace win {
 
 	inline void fatal_exit(uint32 code) {
 		FatalExit(code);
-	} 
+	}
 
 } // win
